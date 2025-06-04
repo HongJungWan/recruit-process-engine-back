@@ -3,14 +3,14 @@ package service
 import (
     "context"
     "errors"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
+    model "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
+    repository "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
 )
 
 type UserService interface {
     Register(ctx context.Context, email, password, name string) (int, error)
-    GetByID(ctx context.Context, id int) (*models.User, error)
-    Login(ctx context.Context, email, password string) (*models.User, error)
+    GetByID(ctx context.Context, id int) (*model.User, error)
+    Login(ctx context.Context, email, password string) (*model.User, error)
 }
 
 type userService struct {
@@ -29,7 +29,7 @@ func (s *userService) Register(ctx context.Context, email, password, name string
 
     hashedPassword := password
 
-    u := &models.User{
+    u := &model.User{
         Email:    email,
         Password: hashedPassword,
         Name:     name,
@@ -42,11 +42,11 @@ func (s *userService) Register(ctx context.Context, email, password, name string
     return newID, nil
 }
 
-func (s *userService) GetByID(ctx context.Context, id int) (*models.User, error) {
+func (s *userService) GetByID(ctx context.Context, id int) (*model.User, error) {
     return s.repo.GetByID(ctx, id)
 }
 
-func (s *userService) Login(ctx context.Context, email, password string) (*models.User, error) {
+func (s *userService) Login(ctx context.Context, email, password string) (*model.User, error) {
     u, err := s.repo.GetByEmail(ctx, email)
     if err != nil {
         return nil, err

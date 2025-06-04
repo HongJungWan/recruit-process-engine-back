@@ -4,13 +4,13 @@ import (
     "context"
     "github.com/jmoiron/sqlx"
     sq "github.com/Masterminds/squirrel" // Squirrel import
-    "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
+    model "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
 )
 
 type UserRepository interface {
-    GetByID(ctx context.Context, id int) (*models.User, error)
-    GetByEmail(ctx context.Context, email string) (*models.User, error)
-    Create(ctx context.Context, user *models.User) (int, error)
+    GetByID(ctx context.Context, id int) (*model.User, error)
+    GetByEmail(ctx context.Context, email string) (*model.User, error)
+    Create(ctx context.Context, user *model.User) (int, error)
 }
 
 type userRepo struct {
@@ -21,7 +21,7 @@ type userRepo struct {
 
 // 의존성 주입(DI) 패턴
 func NewUserRepository(db *sqlx.DB) UserRepository {
-    tableName := (&models.User{}).TableName()
+    tableName := (&model.User{}).TableName()
     return &userRepo{
         db:    db,
         sb:    sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
@@ -29,7 +29,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
     }
 }
 
-func (r *userRepo) GetByID(ctx context.Context, id int) (*models.User, error) {
+func (r *userRepo) GetByID(ctx context.Context, id int) (*model.User, error) {
     queryBuilder := r.sb.
         Select("id", "email", "password", "name", "created_at", "updated_at").
         From(r.table).
@@ -40,7 +40,7 @@ func (r *userRepo) GetByID(ctx context.Context, id int) (*models.User, error) {
         return nil, err
     }
 
-    var u models.User
+    var u model.User
     if err := r.db.GetContext(ctx, &u, sqlStr, args...); err != nil {
         return nil, err
     }
@@ -48,7 +48,7 @@ func (r *userRepo) GetByID(ctx context.Context, id int) (*models.User, error) {
     return &u, nil
 }
 
-func (r *userRepo) GetByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *userRepo) GetByEmail(ctx context.Context, email string) (*model.User, error) {
     queryBuilder := r.sb.
         Select("id", "email", "password", "name", "created_at", "updated_at").
         From(r.table).
@@ -59,7 +59,7 @@ func (r *userRepo) GetByEmail(ctx context.Context, email string) (*models.User, 
         return nil, err
     }
 
-    var u models.User
+    var u model.User
     if err := r.db.GetContext(ctx, &u, sqlStr, args...); err != nil {
         return nil, err
     }
@@ -67,7 +67,7 @@ func (r *userRepo) GetByEmail(ctx context.Context, email string) (*models.User, 
     return &u, nil
 }
 
-func (r *userRepo) Create(ctx context.Context, user *models.User) (int, error) {
+func (r *userRepo) Create(ctx context.Context, user *model.User) (int, error) {
     queryBuilder := r.sb.
         Insert(r.table).
         Columns("email", "password", "name", "created_at", "updated_at").
