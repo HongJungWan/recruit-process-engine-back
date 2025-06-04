@@ -5,10 +5,10 @@ import (
 
     "github.com/HongJungWan/recruit-process-engine-back/internal/config"
     "github.com/HongJungWan/recruit-process-engine-back/internal/db"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/handler"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/repository"
     "github.com/HongJungWan/recruit-process-engine-back/internal/router"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/service"
+    userHandler "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"
+    userRepository "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
+    userService "github.com/HongJungWan/recruit-process-engine-back/internal/user/service"
 )
 
 func main() {
@@ -23,9 +23,9 @@ func main() {
     }
 
     // 3) 의존성 주입 (DI)
-    userRepo := repository.NewUserRepository(db.DB)   // repository 계층
-    userSvc := service.NewUserService(userRepo)       // service 계층
-    userHandler := handler.NewUserHandler(userSvc)    // handler 계층
+    userRepo := userRepository.NewUserRepository(db.DB)   // repository 계층
+    userSvc := userService.NewUserService(userRepo)       // service 계층
+    userHandler := userHandler.NewUserHandler(userSvc)    // handler 계층
 
     // 4) 라우터 초기화
     r := router.InitRouter(userHandler)

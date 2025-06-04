@@ -2,7 +2,7 @@ package router
 
 import (
     "github.com/gin-gonic/gin"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/handler"
+    "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"
 )
 
 func InitRouter(userHandler handler.UserHandler) *gin.Engine {
