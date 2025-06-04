@@ -4,7 +4,7 @@ import (
     "context"
     "github.com/jmoiron/sqlx"
     sq "github.com/Masterminds/squirrel" // Squirrel import
-    "github.com/HongJungWan/recruit-process-engine-back/internal/models"
+    "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
 )
 
 type UserRepository interface {

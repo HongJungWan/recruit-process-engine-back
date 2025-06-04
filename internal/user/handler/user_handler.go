@@ -5,7 +5,7 @@ import (
     "strconv"
 
     "github.com/gin-gonic/gin"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/service"
+    "github.com/HongJungWan/recruit-process-engine-back/internal/user/service"
 )
 
 type UserHandler interface {

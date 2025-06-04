@@ -3,8 +3,8 @@ package service
 import (
     "context"
     "errors"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/models"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/repository"
+    "github.com/HongJungWan/recruit-process-engine-back/internal/user/model"
+    "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
 )
 
 type UserService interface {
