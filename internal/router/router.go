@@ -8,13 +8,19 @@ import (
 func InitRouter(userHandler handler.UserHandler) *gin.Engine {
     r := gin.Default()
 
+    r.GET("/health", userHandler.HealthCheck)
+
     api := r.Group("/api")
     {
         users := api.Group("/users")
         {
             users.POST("", userHandler.Register)
-            users.POST("/login", userHandler.Login)
             users.GET("/:id", userHandler.GetProfile)
+        }
+
+        auth := api.Group("/auth")
+        {
+            auth.POST("", userHandler.Login)
         }
     }
 

@@ -5,6 +5,7 @@ import (
     "strconv"
 
     "github.com/gin-gonic/gin"
+    reqdto "github.com/HongJungWan/recruit-process-engine-back/internal/user/dto/request"
     service "github.com/HongJungWan/recruit-process-engine-back/internal/user/service"
 )
 
@@ -12,6 +13,7 @@ type UserHandler interface {
     Register(c *gin.Context)
     Login(c *gin.Context)
     GetProfile(c *gin.Context)
+    HealthCheck(c *gin.Context)
 }
 
 type userHandler struct {
@@ -22,14 +24,8 @@ func NewUserHandler(userSvc service.UserService) UserHandler {
     return &userHandler{userSvc: userSvc}
 }
 
-type RegisterRequest struct {
-    Email    string `json:"email" binding:"required,email"`
-    Password string `json:"password" binding:"required,min=6"`
-    Name     string `json:"name" binding:"required"`
-}
-
 func (h *userHandler) Register(c *gin.Context) {
-    var req RegisterRequest
+    var req reqdto.RegisterRequest
     if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -40,18 +36,12 @@ func (h *userHandler) Register(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-	
+
     c.JSON(http.StatusCreated, gin.H{"id": newID})
 }
 
-type LoginRequest struct {
-    Email    string `json:"email" binding:"required,email"`
-    Password string `json:"password" binding:"required"`
-}
-
 func (h *userHandler) Login(c *gin.Context) {
-    var req LoginRequest
-
+    var req reqdto.LoginRequest
     if err := c.ShouldBindJSON(&req); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -79,4 +69,8 @@ func (h *userHandler) GetProfile(c *gin.Context) {
         return
     }
     c.JSON(http.StatusOK, user)
+}
+
+func (h *userHandler) HealthCheck(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
