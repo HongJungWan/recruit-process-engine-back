@@ -1,14 +1,15 @@
 package main
 
 import (
-    "log"
+	"log"
 
-    "github.com/HongJungWan/recruit-process-engine-back/internal/config"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/db"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/router"
-    userHandler "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"
-    userRepository "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
-    userService "github.com/HongJungWan/recruit-process-engine-back/internal/user/service"
+	"github.com/HongJungWan/recruit-process-engine-back/internal/config"
+	"github.com/HongJungWan/recruit-process-engine-back/internal/db"
+	"github.com/HongJungWan/recruit-process-engine-back/internal/router"
+
+	userHandler "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"
+	userRepository "github.com/HongJungWan/recruit-process-engine-back/internal/user/repository"
+	userService "github.com/HongJungWan/recruit-process-engine-back/internal/user/service"
 )
 
 func main() {
