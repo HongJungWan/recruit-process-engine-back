@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/HongJungWan/recruit-process-engine-back/internal/config"
-	"github.com/HongJungWan/recruit-process-engine-back/internal/db"
+	"github.com/HongJungWan/recruit-process-engine-back/configs/config"
+	"github.com/HongJungWan/recruit-process-engine-back/configs/db"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/router"
 )
 

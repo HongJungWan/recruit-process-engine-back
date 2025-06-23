@@ -1,11 +1,12 @@
 package db
 
 import (
-    "fmt"
-    "github.com/jmoiron/sqlx"
-    _ "github.com/jackc/pgx/v4/stdlib"
-    "log"
-    "github.com/HongJungWan/recruit-process-engine-back/internal/config"
+	"fmt"
+	"log"
+
+	"github.com/HongJungWan/recruit-process-engine-back/configs/config"
+	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jmoiron/sqlx"
 )
 
 var DB *sqlx.DB
