@@ -42,11 +42,11 @@ func (h *userHandler) Login(c *gin.Context) {
         return
     }
 
-    session.Manager.Put(c.Request.Context(), "user_id", userID)
+    session.Adapter.Put(c, "user_id", userID)
     c.JSON(http.StatusOK, gin.H{"message": "logged in"})
 }
 
 func (h *userHandler) Logout(c *gin.Context) {
-    session.Manager.Destroy(c.Request.Context())
+    session.Adapter.Destroy(c)
     c.Status(http.StatusNoContent)
 }
