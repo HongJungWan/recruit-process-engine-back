@@ -11,6 +11,7 @@ import (
 
 type UserRepository interface {
     GetByEmail(ctx context.Context, loginID string) (*model.User, error)
+    Authenticate(ctx context.Context, loginID, password string) (int, error)
 }
 
 type userRepo struct {
@@ -55,4 +56,16 @@ func (r *userRepo) GetByEmail(ctx context.Context, loginID string) (*model.User,
         return nil, err
     }
     return &u, nil
+}
+
+func (r *userRepo) Authenticate(ctx context.Context, loginID, password string) (int, error) {
+    // 사용자 정보 조회
+    u, err := r.GetByEmail(ctx, loginID)
+    if err != nil {
+        return 0, err
+    }
+
+    // TODO: 비밀번호 비교
+
+    return u.UserID, nil
 }

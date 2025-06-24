@@ -3,9 +3,11 @@ module github.com/HongJungWan/recruit-process-engine-back
 go 1.23.9
 
 require (
+	github.com/39george/scs_gin_adapter v0.1.2
 	github.com/Masterminds/squirrel v1.5.4
+	github.com/alexedwards/scs/postgresstore v0.0.0-20250417082927-ab20b3feb5e9
+	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/gin-gonic/gin v1.10.1
-	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
