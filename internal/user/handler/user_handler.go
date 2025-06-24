@@ -43,7 +43,7 @@ func (h *userHandler) Login(c *gin.Context) {
     }
 
     session.Adapter.Put(c, "user_id", userID)
-    c.JSON(http.StatusOK, gin.H{"message": "logged in"})
+    c.JSON(http.StatusOK, gin.H{"message": "logged in", "user_id":  userID,})
 }
 
 func (h *userHandler) Logout(c *gin.Context) {

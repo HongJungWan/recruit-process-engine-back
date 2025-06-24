@@ -21,6 +21,14 @@ import (
 	tmplHand "github.com/HongJungWan/recruit-process-engine-back/internal/template/handler"
 	tmplRepo "github.com/HongJungWan/recruit-process-engine-back/internal/template/repository"
 	tmplSvc "github.com/HongJungWan/recruit-process-engine-back/internal/template/service"
+
+	offerHand "github.com/HongJungWan/recruit-process-engine-back/internal/offer/handler"
+	offerRepo "github.com/HongJungWan/recruit-process-engine-back/internal/offer/repository"
+	offerSvc "github.com/HongJungWan/recruit-process-engine-back/internal/offer/service"
+
+	apprHand "github.com/HongJungWan/recruit-process-engine-back/internal/offer/handler"
+	apprRepo "github.com/HongJungWan/recruit-process-engine-back/internal/offer/repository"
+	apprSvc "github.com/HongJungWan/recruit-process-engine-back/internal/offer/service"
 )
 
 func InitRouter(db *sqlx.DB) *gin.Engine {
@@ -54,6 +62,14 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     ehSvc  := tmplSvc.NewEmailHistoryService(ehRepo)
     ehH    := tmplHand.NewEmailHistoryHandler(ehSvc)
 
+    // 오퍼 & 결재 계층
+    or := offerRepo.NewOfferRepository(db)
+    rr := apprRepo.NewApprovalRepository(db)
+    os := offerSvc.NewOfferService(or, rr)
+    rs := apprSvc.NewApprovalService(rr)
+    oh := offerHand.NewOfferHandler(os, ehSvc)
+    rh := apprHand.NewApprovalHandler(rs)
+
     api := r.Group("/api/v1")
     api.GET("/health-check", uh.HealthCheck)
     api.POST("/auth/login", uh.Login)
@@ -82,5 +98,14 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     api.GET("/email-history",                     ehH.ListHistory)
     api.GET("/email-history/:email_id",           ehH.GetHistory)
 
+    api.POST("/offers", oh.CreateOffer)
+    api.GET("/offers", oh.ListOffers)
+    api.GET("/offers/:offer_id", oh.GetOfferDetail)
+    api.POST("/offers/:offer_id/send", oh.SendEmail)
+
+    api.GET("/offers/:offer_id/approvals", rh.ListApprovals)
+    api.POST("/offers/:offer_id/approvals", rh.CreateApprovals)
+    api.PUT("/offers/:offer_id/approvals/:approval_id", rh.ProcessApproval)
+    
     return r
 }
