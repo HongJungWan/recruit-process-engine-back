@@ -17,6 +17,10 @@ import (
 	appHand "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/handler"
 	appRepo "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/repository"
 	appSvc "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/service"
+
+	tmplHand "github.com/HongJungWan/recruit-process-engine-back/internal/template/handler"
+	tmplRepo "github.com/HongJungWan/recruit-process-engine-back/internal/template/repository"
+	tmplSvc "github.com/HongJungWan/recruit-process-engine-back/internal/template/service"
 )
 
 func InitRouter(db *sqlx.DB) *gin.Engine {
@@ -40,6 +44,16 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     as := appSvc.NewApplicantService(ar)
     ah := appHand.NewApplicantHandler(as)
 
+    // 이메일 템플릿 계층
+    etRepo := tmplRepo.NewEmailTemplateRepository(db)
+    etSvc  := tmplSvc.NewEmailTemplateService(etRepo)
+    etH    := tmplHand.NewEmailTemplateHandler(etSvc)
+
+    // 이메일 발송 이력 계층
+    ehRepo := tmplRepo.NewEmailHistoryRepository(db)
+    ehSvc  := tmplSvc.NewEmailHistoryService(ehRepo)
+    ehH    := tmplHand.NewEmailHistoryHandler(ehSvc)
+
     api := r.Group("/api/v1")
     api.GET("/health-check", uh.HealthCheck)
     api.POST("/auth/login", uh.Login)
@@ -57,6 +71,16 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     api.PATCH("/applicants/:application_id/stage", ah.UpdateApplicantStage)
     api.POST( "/applicants/stages/bulk-update", ah.BulkUpdateApplicantStage)
     api.GET("/applicants/:application_id/history", ah.GetApplicantHistory)
+
+    api.GET("/email-templates",                   etH.ListTemplates)
+    api.GET("/email-templates/:template_id",      etH.GetTemplate)
+    api.POST("/email-templates",                  etH.CreateTemplate)
+    api.PUT("/email-templates/:template_id",      etH.UpdateTemplate)
+    api.DELETE("/email-templates/:template_id",   etH.DeleteTemplate)
+
+    api.POST("/email-history",                    ehH.SendEmail)
+    api.GET("/email-history",                     ehH.ListHistory)
+    api.GET("/email-history/:email_id",           ehH.GetHistory)
 
     return r
 }
