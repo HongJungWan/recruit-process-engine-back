@@ -13,6 +13,10 @@ import (
 	gpHand "github.com/HongJungWan/recruit-process-engine-back/internal/preference/handler"
 	gpRepo "github.com/HongJungWan/recruit-process-engine-back/internal/preference/repository"
 	gpSvc "github.com/HongJungWan/recruit-process-engine-back/internal/preference/service"
+
+	appHand "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/handler"
+	appRepo "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/repository"
+	appSvc "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/service"
 )
 
 func InitRouter(db *sqlx.DB) *gin.Engine {
@@ -31,6 +35,11 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     gpSvc  := gpSvc.NewGridPreferenceService(gpRepo)
     gpHand := gpHand.NewGridPreferenceHandler(gpSvc)
 
+    // 지원자 계층
+    ar := appRepo.NewApplicantRepository(db)
+    as := appSvc.NewApplicantService(ar)
+    ah := appHand.NewApplicantHandler(as)
+
     api := r.Group("/api/v1")
     api.GET("/health-check", uh.HealthCheck)
     api.POST("/auth/login", uh.Login)
@@ -42,6 +51,12 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     users.POST("/grid-preferences", gpHand.CreateGridPreference)
     users.PUT("/grid-preferences/:preference_id", gpHand.UpdateGridPreference)
     users.DELETE("/grid-preferences/:preference_id", gpHand.DeleteGridPreference)
+
+    api.GET("/applicants", ah.ListApplicants)
+    api.GET("/applicants/:application_id", ah.GetApplicant)
+    api.PATCH("/applicants/:application_id/stage", ah.UpdateApplicantStage)
+    api.POST( "/applicants/stages/bulk-update", ah.BulkUpdateApplicantStage)
+    api.GET("/applicants/:application_id/history", ah.GetApplicantHistory)
 
     return r
 }
