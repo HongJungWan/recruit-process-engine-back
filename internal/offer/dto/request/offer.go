@@ -1,6 +1,9 @@
 package request
 
-import "time"
+import (
+	// 표준 라이브러리
+	"time"
+)
 
 type CreateOfferRequest struct {
     ApplicationID int       `json:"application_id" binding:"required"`

@@ -1,11 +1,13 @@
 package service
 
 import (
+	// 표준 라이브러리
 	"context"
 	"errors"
 	"strconv"
 	"time"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/offer/dto/response"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/offer/model"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/offer/repository"
@@ -50,14 +52,17 @@ func (s *offerService) Create(ctx context.Context, userID int, in CreateOfferInp
         LetterContent: in.LetterContent,
         CreatedBy:     strconv.Itoa(userID),
     }
+
     if err := s.repo.Create(ctx, o); err != nil {
         return nil, err
     }
+
     return o, nil
 }
 
 func (s *offerService) List(ctx context.Context, status string, page, size int) ([]model.Offer, int, error) {
     offset := (page - 1) * size
+
     return s.repo.FindAll(ctx, status, offset, size)
 }
 
@@ -66,8 +71,9 @@ func (s *offerService) GetDetail(ctx context.Context, id int) (*model.Offer, []r
     if err != nil {
         return nil, nil, ErrOfferNotFound
     }
-    approvals, _ := s.appRepo.FindByOffer(ctx, id)
+
     var stats []response.ApproverStatus
+    approvals, _ := s.appRepo.FindByOffer(ctx, id)
     for _, ap := range approvals {
         stats = append(stats, response.ApproverStatus{
             ApproverID: ap.ApproverID,
@@ -75,5 +81,6 @@ func (s *offerService) GetDetail(ctx context.Context, id int) (*model.Offer, []r
             Comment:    ap.Comment,
         })
     }
+    
     return o, stats, nil
 }

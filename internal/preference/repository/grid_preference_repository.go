@@ -70,8 +70,16 @@ func (r *gridPreferenceRepo) Create(ctx context.Context, gp *model.GridPreferenc
 
     qb := r.sb.
         Insert(r.table).
-        Columns("user_id","grid_name","config","created_by").
-        Values(gp.UserID, gp.GridName, data, gp.CreatedBy).
+            Columns(
+                "user_id",
+                "grid_name",
+                "config",
+                "created_by").
+            Values(
+                gp.UserID, 
+                gp.GridName, 
+                data, 
+                gp.CreatedBy).
         Suffix("RETURNING preference_id, created_at")
 
     sqlStr, args, _ := qb.ToSql()
@@ -84,9 +92,9 @@ func (r *gridPreferenceRepo) Update(ctx context.Context, gp *model.GridPreferenc
 
     qb := r.sb.
         Update(r.table).
-        Set("config", data).
-        Set("updated_by", gp.UpdatedBy).
-        Set("updated_at", sq.Expr("now()")).
+            Set("config", data).
+            Set("updated_by", gp.UpdatedBy).
+            Set("updated_at", sq.Expr("now()")).
         Where(sq.Eq{"preference_id": gp.PreferenceID}).
         Suffix("RETURNING updated_at")
 

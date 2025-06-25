@@ -42,7 +42,11 @@ func NewApplicantRepository(db *sqlx.DB) ApplicantRepository {
 
 func (r *applicantRepo) FindAll(ctx context.Context, stage, keyword string, offset, limit int) ([]model.Applicant, error) {
     qb := r.sb.
-        Select("application_id","name","email","current_stage").
+        Select(
+            "application_id",
+            "name",
+            "email",
+            "current_stage").
         From(r.table)
 
     if stage != "" {
@@ -109,12 +113,12 @@ func (r *applicantRepo) FindByID(ctx context.Context, id int) (*model.Applicant,
 
 func (r *applicantRepo) UpdateStage(ctx context.Context, id int, newStage, updatedBy string) (time.Time, error) {
     qb := r.sb.
-    Update(r.table).
-        Set("current_stage", newStage).
-        Set("updated_by", updatedBy).
-        Set("updated_at", sq.Expr("now()")).
-    Where(sq.Eq{"application_id": id}).
-    Suffix("RETURNING updated_at")
+        Update(r.table).
+            Set("current_stage", newStage).
+            Set("updated_by", updatedBy).
+            Set("updated_at", sq.Expr("now()")).
+        Where(sq.Eq{"application_id": id}).
+        Suffix("RETURNING updated_at")
 
     var updatedAt time.Time
     sqlStr, args, _ := qb.ToSql()
@@ -127,11 +131,11 @@ func (r *applicantRepo) UpdateStage(ctx context.Context, id int, newStage, updat
 
 func (r *applicantRepo) BulkUpdateStage(ctx context.Context, ids []int, newStage, updatedBy string) (int64, error) {
     qb := r.sb.
-    Update(r.table).
-        Set("current_stage", newStage).
-        Set("updated_by", updatedBy).
-        Set("updated_at", sq.Expr("now()")).
-    Where(sq.Eq{"application_id": ids})
+        Update(r.table).
+            Set("current_stage", newStage).
+            Set("updated_by", updatedBy).
+            Set("updated_at", sq.Expr("now()")).
+        Where(sq.Eq{"application_id": ids})
     
     sqlStr, args, _ := qb.ToSql()
     res, err := r.db.ExecContext(ctx, sqlStr, args...)
@@ -144,10 +148,18 @@ func (r *applicantRepo) BulkUpdateStage(ctx context.Context, ids []int, newStage
 
 func (r *applicantRepo) CreateHistory(ctx context.Context, h *model.StageHistory) error {
     qb := r.sb.
-    Insert(r.histTable).
-        Columns("application_id","stage","status","created_by").
-        Values(h.ApplicationID, h.Stage, h.Status, h.CreatedBy).
-    Suffix("RETURNING history_id, created_at")
+        Insert(r.histTable).
+            Columns(
+                "application_id",
+                "stage",
+                "status",
+                "created_by").
+            Values(
+                h.ApplicationID, 
+                h.Stage, 
+                h.Status, 
+                h.CreatedBy).
+        Suffix("RETURNING history_id, created_at")
 
     sqlStr, args, _ := qb.ToSql()
 
@@ -156,10 +168,10 @@ func (r *applicantRepo) CreateHistory(ctx context.Context, h *model.StageHistory
 
 func (r *applicantRepo) FindHistoryByApplicant(ctx context.Context, id int) ([]model.StageHistory, error) {
     qb := r.sb.
-    Select("*").
-    From(r.histTable).
-    Where(sq.Eq{"application_id": id}).
-    OrderBy("created_at")
+        Select("*").
+        From(r.histTable).
+        Where(sq.Eq{"application_id": id}).
+        OrderBy("created_at")
 
     var hs []model.StageHistory
     sqlStr, args, _ := qb.ToSql()

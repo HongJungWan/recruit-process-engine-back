@@ -1,10 +1,12 @@
 package service
 
 import (
+	// 표준 라이브러리
 	"context"
 	"errors"
 	"time"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/offer/model"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/offer/repository"
 )
@@ -38,6 +40,8 @@ func (s *approvalService) Process(ctx context.Context, id int, status, comment, 
     if err != nil {
         return time.Time{}, ErrApprovalNotFound
     }
+
     decidedAt, err := s.repo.UpdateStatus(ctx, id, status, comment, decidedBy)
+
     return decidedAt, err
 }

@@ -34,10 +34,24 @@ func NewEmailHistoryRepository(db *sqlx.DB) EmailHistoryRepository {
 
 func (r *emailHistoryRepo) Create(ctx context.Context, h *model.EmailHistory) error {
     qb := r.sb.
-    Insert(r.table).
-        Columns("user_id","application_id","offer_id","template_id","title","body","created_by").
-        Values(h.UserID, h.ApplicationID, h.OfferID, h.TemplateID, h.Title, h.Body, h.CreatedBy).
-    Suffix("RETURNING email_id, created_at")
+        Insert(r.table).
+            Columns(
+                "user_id",
+                "application_id",
+                "offer_id",
+                "template_id",
+                "title",
+                "body",
+                "created_by").
+            Values(
+                h.UserID, 
+                h.ApplicationID, 
+                h.OfferID, 
+                h.TemplateID, 
+                h.Title, 
+                h.Body, 
+                h.CreatedBy).
+        Suffix("RETURNING email_id, created_at")
     
     sqlStr, args, _ := qb.ToSql()
     
@@ -46,8 +60,11 @@ func (r *emailHistoryRepo) Create(ctx context.Context, h *model.EmailHistory) er
 
 func (r *emailHistoryRepo) FindAll(ctx context.Context, applicantID, offerID *int, offset, limit int) ([]model.EmailHistory, error) {
     qb := r.sb.
-    Select("email_id","title","created_at").
-    From(r.table)
+        Select(
+            "email_id",
+            "title",
+            "created_at").
+        From(r.table)
 
     if applicantID != nil {
         qb = qb.Where(sq.Eq{"application_id": *applicantID})
@@ -69,10 +86,10 @@ func (r *emailHistoryRepo) FindAll(ctx context.Context, applicantID, offerID *in
 
 func (r *emailHistoryRepo) FindByID(ctx context.Context, id int) (*model.EmailHistory, error) {
     sqlStr, args, _ := r.sb.
-    Select("*").
-    From(r.table).
-    Where(sq.Eq{"email_id": id}).
-    ToSql()
+        Select("*").
+        From(r.table).
+        Where(sq.Eq{"email_id": id}).
+        ToSql()
     
     var h model.EmailHistory
     if err := r.db.GetContext(ctx, &h, sqlStr, args...); err != nil {

@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	// 표준 라이브러리
+	"time"
+)
 
 type Offer struct {
     OfferID       int        `db:"offer_id"`
