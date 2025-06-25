@@ -1,10 +1,12 @@
 package service
 
 import (
+	// 표준 라이브러리
 	"context"
 	"encoding/json"
 	"errors"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/template/model"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/template/repository"
 )
@@ -36,20 +38,24 @@ func (s *emailTemplateService) Get(ctx context.Context, id int) (*model.EmailTem
     if err != nil {
         return nil, ErrTemplateNotFound
     }
+
     return t, nil
 }
 
 func (s *emailTemplateService) Create(ctx context.Context, name string, cfg map[string]interface{}) (*model.EmailTemplate, error) {
     t := &model.EmailTemplate{Name: name}
+
     t.Config, _ = json.Marshal(cfg)
     if err := s.repo.Create(ctx, t); err != nil {
         return nil, err
     }
+
     return t, nil
 }
 
 func (s *emailTemplateService) Update(ctx context.Context, id int, name *string, cfg *map[string]interface{}) (*model.EmailTemplate, error) {
     t, err := s.repo.FindByID(ctx, id)
+
     if err != nil {
         return nil, ErrTemplateNotFound
     }
@@ -62,6 +68,7 @@ func (s *emailTemplateService) Update(ctx context.Context, id int, name *string,
     if err := s.repo.Update(ctx, t); err != nil {
         return nil, err
     }
+    
     return t, nil
 }
 

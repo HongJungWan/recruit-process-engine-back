@@ -1,6 +1,9 @@
 package response
 
-import "time"
+import (
+	// 표준 라이브러리
+	"time"
+)
 
 type CreateEmailHistoryResponse struct {
     EmailID  int       `json:"email_id"`

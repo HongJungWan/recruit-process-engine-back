@@ -1,15 +1,19 @@
 package handler
 
 import (
+	// 표준 라이브러리
 	"encoding/json"
 	"net/http"
 	"strconv"
 
+	// 서드파티(외부) 라이브러리
+	"github.com/gin-gonic/gin"
+
+	// 내부 패키지
 	req "github.com/HongJungWan/recruit-process-engine-back/internal/template/dto/request"
 	res "github.com/HongJungWan/recruit-process-engine-back/internal/template/dto/response"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/template/service"
 	svc "github.com/HongJungWan/recruit-process-engine-back/internal/template/service"
-	"github.com/gin-gonic/gin"
 )
 
 type EmailTemplateHandler interface {
@@ -34,82 +38,100 @@ func (h *emailTemplateHandler) ListTemplates(c *gin.Context) {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    out := make([]res.EmailTemplateItem, len(list))
+
+    output := make([]res.EmailTemplateItem, len(list))
     for i, t := range list {
         var cfg map[string]interface{}
         json.Unmarshal(t.Config, &cfg)
-        out[i] = res.EmailTemplateItem{
+        output[i] = res.EmailTemplateItem{
             TemplateID: t.ID,
             Name:       t.Name,
             Config:     cfg,
             CreatedAt:  t.CreatedAt,
         }
     }
-    c.JSON(http.StatusOK, out)
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *emailTemplateHandler) GetTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
+
     t, err := h.svc.Get(c.Request.Context(), id)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
         return
     }
+
     var cfg map[string]interface{}
     json.Unmarshal(t.Config, &cfg)
-    c.JSON(http.StatusOK, res.EmailTemplateDetail{
+
+    output := res.EmailTemplateDetail{
         TemplateID: t.ID,
         Name:       t.Name,
         Config:     cfg,
         CreatedAt:  t.CreatedAt,
-    })
+    }
+
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *emailTemplateHandler) CreateTemplate(c *gin.Context) {
-    var reqBody req.CreateEmailTemplate
-    if err := c.ShouldBindJSON(&reqBody); err != nil {
+    var input req.CreateEmailTemplate
+    if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    t, err := h.svc.Create(c.Request.Context(), reqBody.Name, reqBody.Config)
+
+    t, err := h.svc.Create(c.Request.Context(), input.Name, input.Config)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
+
     var cfg map[string]interface{}
     json.Unmarshal(t.Config, &cfg)
-    c.JSON(http.StatusOK, res.EmailTemplateDetail{
+
+    output := res.EmailTemplateDetail{
         TemplateID: t.ID,
         Name:       t.Name,
         Config:     cfg,
         CreatedAt:  t.CreatedAt,
-    })
+    }
+
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *emailTemplateHandler) UpdateTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
-    var reqBody req.UpdateEmailTemplate
-    if err := c.ShouldBindJSON(&reqBody); err != nil {
+
+    var input req.UpdateEmailTemplate
+    if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    t, err := h.svc.Update(c.Request.Context(), id, reqBody.Name, reqBody.Config)
+
+    t, err := h.svc.Update(c.Request.Context(), id, input.Name, input.Config)
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
     var cfg map[string]interface{}
     json.Unmarshal(t.Config, &cfg)
-    c.JSON(http.StatusOK, res.EmailTemplateDetail{
+
+    output := res.EmailTemplateDetail{
         TemplateID: t.ID,
         Name:       t.Name,
         Config:     cfg,
         CreatedAt:  t.CreatedAt,
-    })
+    }
+
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *emailTemplateHandler) DeleteTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
+    
     if err := h.svc.Delete(c.Request.Context(), id); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
