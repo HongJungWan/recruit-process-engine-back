@@ -1,6 +1,6 @@
 package request
 
 type Credentials struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	LoginId  string `json:"login_id" binding:"required"` // 사용자 이름
+	Password string `json:"password" binding:"required"` // 비밀번호
 }

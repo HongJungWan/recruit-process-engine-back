@@ -1,8 +1,10 @@
 package main
 
 import (
+	// 표준 라이브러리
 	"log"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/configs/config"
 	"github.com/HongJungWan/recruit-process-engine-back/configs/db"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/router"
@@ -12,12 +14,12 @@ import (
 func main() {
     // 1. 설정 로드
     if err := config.InitConfig(); err != nil {
-        log.Fatalf("Failed to load config: %v", err)
+        log.Fatalf("설정 로드 실패: %v", err)
     }
 
     // 2. DB 초기화 (sqlx + PostgreSQL)
     if err := db.InitDB(); err != nil {
-        log.Fatalf("Failed to connect to DB: %v", err)
+        log.Fatalf("DB 연결 실패: %v", err)
     }
 
     // 3. 세션 매니저 초기화
@@ -29,8 +31,8 @@ func main() {
 
     // 5. HTTP 서버 구동
     addr := ":" + config.Cfg.HTTPPort
-    log.Printf("[Server] Listening on %s\n", addr)
+    log.Printf("[서버] Listening on %s\n", addr)
     if err := r.Run(addr); err != nil {
-        log.Fatalf("Failed to run server: %v", err)
+        log.Fatalf("서버 실행 실패: %v", err)
     }
 }
