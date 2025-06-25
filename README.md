@@ -1,5 +1,15 @@
 # 🚀 recruit-back, v1.0.0
 
+```
+swag init --generalInfo ./cmd/server/main.go --output ./docs --parseDependency --parseInternal
+```
+
+```
+스웨거 경로 : http://localhost:8080/swagger/index.html
+```
+
+<br><br>
+
 ### 🎯 지원자 관리
 
 #### ✨ 비즈니스 요구사항

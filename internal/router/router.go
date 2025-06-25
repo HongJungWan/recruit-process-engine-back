@@ -4,8 +4,11 @@ import (
 	// 서드파티(외부) 라이브러리
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	// 내부 패키지
+	_ "github.com/HongJungWan/recruit-process-engine-back/docs"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/session"
 
 	userHandler "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"
@@ -109,5 +112,8 @@ func InitRouter(db *sqlx.DB) *gin.Engine {
     api.POST("/offers/:offer_id/approvals", rh.CreateApprovals)
     api.PUT("/offers/:offer_id/approvals/:approval_id", rh.ProcessApproval)
     
+    // 스웨거 적용
+    r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
     return r
 }

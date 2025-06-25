@@ -31,6 +31,14 @@ func NewGridPreferenceHandler(s svc.GridPreferenceService) GridPreferenceHandler
     return &gridPreferenceHandler{svc: s}
 }
 
+// GetGridPreferences godoc
+// @Summary      그리드 설정 조회
+// @Description  현재 로그인된 사용자의 모든 그리드 설정을 반환한다.
+// @Tags         GridPreferences
+// @Produce      json
+// @Success      200  {array}   res.GridPreference
+// @Failure      500
+// @Router       /users/grid-preferences [get]
 func (h *gridPreferenceHandler) GetGridPreferences(c *gin.Context) {
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
     if userID == 0 {
@@ -58,6 +66,17 @@ func (h *gridPreferenceHandler) GetGridPreferences(c *gin.Context) {
     c.JSON(http.StatusOK, out)
 }
 
+// CreateGridPreference godoc
+// @Summary      그리드 설정 생성
+// @Description  새로운 그리드 설정을 생성한다.
+// @Tags         GridPreferences
+// @Accept       json
+// @Produce      json
+// @Param        body  body      req.CreateGridPreference  true  "생성할 그리드 설정"
+// @Success      200   {object}  res.GridPreference
+// @Failure      400
+// @Failure      500
+// @Router       /users/grid-preferences [post]
 func (h *gridPreferenceHandler) CreateGridPreference(c *gin.Context) {
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
     if userID == 0 {
@@ -88,6 +107,18 @@ func (h *gridPreferenceHandler) CreateGridPreference(c *gin.Context) {
     c.JSON(http.StatusOK, out)
 }
 
+// UpdateGridPreference godoc
+// @Summary      그리드 설정 수정
+// @Description  그리드 설정(config)을 업데이트한다.
+// @Tags         GridPreferences
+// @Accept       json
+// @Produce      json
+// @Param        preference_id  path      int                         true  "설정 식별자"
+// @Param        body           body      req.UpdateGridPreference    true  "업데이트할 설정 내용"
+// @Success      200            {object}  res.GridPreference
+// @Failure      400
+// @Failure      500
+// @Router       /users/grid-preferences/{preference_id} [put]
 func (h *gridPreferenceHandler) UpdateGridPreference(c *gin.Context) {
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
     if userID == 0 {
@@ -121,6 +152,15 @@ func (h *gridPreferenceHandler) UpdateGridPreference(c *gin.Context) {
     c.JSON(http.StatusOK, out)
 }
 
+// DeleteGridPreference godoc
+// @Summary      그리드 설정 삭제
+// @Description  선택된 그리드 설정을 삭제한다.
+// @Tags         GridPreferences
+// @Param        preference_id  path  int  true  "설정 식별자"
+// @Success      204
+// @Failure      400
+// @Failure      500
+// @Router       /users/grid-preferences/{preference_id} [delete]
 func (h *gridPreferenceHandler) DeleteGridPreference(c *gin.Context) {
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
     if userID == 0 {

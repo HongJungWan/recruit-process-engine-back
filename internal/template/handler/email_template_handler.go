@@ -32,6 +32,14 @@ func NewEmailTemplateHandler(s svc.EmailTemplateService) EmailTemplateHandler {
     return &emailTemplateHandler{svc: s}
 }
 
+// ListTemplates godoc
+// @Summary     이메일 템플릿 목록 조회
+// @Description 저장된 모든 이메일 템플릿의 정보를 반환한다.
+// @Tags        EmailTemplates
+// @Produce     json
+// @Success     200  {array}   res.EmailTemplateItem
+// @Failure     500
+// @Router      /email-templates [get]
 func (h *emailTemplateHandler) ListTemplates(c *gin.Context) {
     list, err := h.svc.List(c.Request.Context())
     if err != nil {
@@ -53,6 +61,15 @@ func (h *emailTemplateHandler) ListTemplates(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// GetTemplate godoc
+// @Summary     이메일 템플릿 상세 조회
+// @Description 선택된 이메일 템플릿의 상세 정보를 반환한다.
+// @Tags        EmailTemplates
+// @Produce     json
+// @Param       template_id  path      int  true  "템플릿 식별자"
+// @Success     200          {object}  res.EmailTemplateDetail
+// @Failure     404
+// @Router      /email-templates/{template_id} [get]
 func (h *emailTemplateHandler) GetTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
 
@@ -75,6 +92,17 @@ func (h *emailTemplateHandler) GetTemplate(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// CreateTemplate godoc
+// @Summary     이메일 템플릿 생성
+// @Description 새로운 이메일 템플릿을 생성한다.
+// @Tags        EmailTemplates
+// @Accept      json
+// @Produce     json
+// @Param       body  body      req.CreateEmailTemplate  true  "생성할 템플릿 정보"
+// @Success     200   {object}  res.EmailTemplateDetail
+// @Failure     400
+// @Failure     500
+// @Router      /email-templates [post]
 func (h *emailTemplateHandler) CreateTemplate(c *gin.Context) {
     var input req.CreateEmailTemplate
     if err := c.ShouldBindJSON(&input); err != nil {
@@ -101,6 +129,18 @@ func (h *emailTemplateHandler) CreateTemplate(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// UpdateTemplate godoc
+// @Summary     이메일 템플릿 수정
+// @Description 이메일 템플릿 설정을 업데이트한다.
+// @Tags        EmailTemplates
+// @Accept      json
+// @Produce     json
+// @Param       template_id  path      int                          true  "템플릿 식별자"
+// @Param       body         body      req.UpdateEmailTemplate      true  "업데이트할 템플릿 정보"
+// @Success     200          {object}  res.EmailTemplateDetail
+// @Failure     400
+// @Failure     500
+// @Router      /email-templates/{template_id} [put]
 func (h *emailTemplateHandler) UpdateTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
 
@@ -129,6 +169,15 @@ func (h *emailTemplateHandler) UpdateTemplate(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// DeleteTemplate godoc
+// @Summary     이메일 템플릿 삭제
+// @Description 선택된 이메일 템플릿을 삭제한다.
+// @Tags        EmailTemplates
+// @Param       template_id  path  int  true  "템플릿 식별자"
+// @Success     204
+// @Failure     400
+// @Failure     500
+// @Router      /email-templates/{template_id} [delete]
 func (h *emailTemplateHandler) DeleteTemplate(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("template_id"))
     

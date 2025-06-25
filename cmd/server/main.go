@@ -1,3 +1,10 @@
+// @title       Recruit Process Engine API
+// @version     1.0
+// @description 채용 프로세스 엔진 백엔드 API 문서
+// @contact.name 홍정완
+// @contact.email test@example.com
+// @host        localhost:8080
+// @BasePath    /api/v1
 package main
 
 import (

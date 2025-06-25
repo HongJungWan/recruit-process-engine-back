@@ -31,6 +31,18 @@ func NewApplicantHandler(svc service.ApplicantService) ApplicantHandler {
     return &applicantHandler{svc: svc}
 }
 
+// ListApplicants godoc
+// @Summary      지원자 목록 조회
+// @Description  지원자 목록과 총 개수를 조회한다.
+// @Tags         Applicants
+// @Param        page     query     int     true   "페이지 번호"
+// @Param        size     query     int     true   "페이지당 항목 수"
+// @Param        stage    query     string  false  "단계 필터 (서류 접수, 기술 면접…)"
+// @Param        keyword  query     string  false  "이름 또는 이메일 키워드 검색"
+// @Success      200      {object}  res.ListApplicantsResponse
+// @Failure      400
+// @Failure      500
+// @Router       /applicants [get]
 func (h *applicantHandler) ListApplicants(c *gin.Context) {
     var input request.ListApplicantsRequest
     if err := c.ShouldBindQuery(&input); err != nil {
@@ -62,6 +74,14 @@ func (h *applicantHandler) ListApplicants(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// GetApplicant godoc
+// @Summary      지원자 상세 조회
+// @Description  단일 지원자 정보를 조회한다.
+// @Tags         Applicants
+// @Param        application_id  path      int  true  "지원자 식별자"
+// @Success      200             {object}  res.ApplicantDetail
+// @Failure      404
+// @Router       /applicants/{application_id} [get]
 func (h *applicantHandler) GetApplicant(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
 
@@ -88,6 +108,15 @@ func (h *applicantHandler) GetApplicant(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// UpdateApplicantStage godoc
+// @Summary      지원자 단계 업데이트
+// @Description  지원자 전형 단계를 수정한다.
+// @Tags         Applicants
+// @Param        application_id  path     int                              true  "지원자 식별자"
+// @Param        body            body     request.UpdateStageRequest      true  "업데이트할 단계 정보"
+// @Success      200             {object} res.UpdateStageResponse
+// @Failure      400
+// @Router       /applicants/{application_id}/stage [patch]
 func (h *applicantHandler) UpdateApplicantStage(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
 
@@ -115,6 +144,14 @@ func (h *applicantHandler) UpdateApplicantStage(c *gin.Context) {
     c.JSON(http.StatusOK, output)
 }
 
+// BulkUpdateApplicantStage godoc
+// @Summary      지원자 단계 일괄 업데이트
+// @Description  여러 지원자의 전형 단계를 일괄 수정한다.
+// @Tags         Applicants
+// @Param        body  body  request.BulkUpdateStageRequest  true  "일괄 업데이트 요청"
+// @Success      200   {object}  res.BulkUpdateResponse
+// @Failure      400
+// @Router       /applicants/stages/bulk-update [post]
 func (h *applicantHandler) BulkUpdateApplicantStage(c *gin.Context) {
     var input request.BulkUpdateStageRequest
     if err := c.ShouldBindJSON(&input); err != nil {
@@ -133,6 +170,14 @@ func (h *applicantHandler) BulkUpdateApplicantStage(c *gin.Context) {
     c.JSON(http.StatusOK, res.BulkUpdateResponse{Updated: cnt})
 }
 
+// GetApplicantHistory godoc
+// @Summary      지원자 단계 변경 이력 조회
+// @Description  해당 지원자의 전형 단계 변경 이력을 조회한다.
+// @Tags         Applicants
+// @Param        application_id  path  int  true  "지원자 식별자"
+// @Success      200             {array}  res.StageHistoryItem
+// @Failure      500
+// @Router       /applicants/{application_id}/history [get]
 func (h *applicantHandler) GetApplicantHistory(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
 
