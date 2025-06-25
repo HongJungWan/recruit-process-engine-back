@@ -79,6 +79,7 @@ func (r *userRepo) GetByUserId(ctx context.Context, loginID string) (*model.User
     if err := r.db.GetContext(ctx, &u, sqlStr, args...); err != nil {
         return nil, err
     }
+
     return &u, nil
 }
 
@@ -109,5 +110,6 @@ func (r *userRepo) GetByPassword(ctx context.Context, password string) (*model.U
     if err := r.db.GetContext(ctx, &u, sqlStr, args...); err != nil {
         return nil, err
     }
+    
     return &u, nil
 }

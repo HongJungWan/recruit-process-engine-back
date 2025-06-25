@@ -12,10 +12,10 @@ type User struct {
     Name      string     `db:"name"       json:"name"`                // 유저 이름
     Email     string     `db:"email"      json:"email"`               // 유저 이메일 주소
     Role      string     `db:"role"       json:"role"`                // 유저 역할
-    CreatedAt time.Time  `db:"created_at" json:"created_at"`          // 생성일시
+    CreatedAt time.Time  `db:"created_at" json:"created_at"`          // 생성일
     CreatedBy string     `db:"created_by" json:"created_by"`          // 생성자
-    UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty"`// 수정일시 (NULL 허용)
-    UpdatedBy *string    `db:"updated_by" json:"updated_by,omitempty"`// 수정자   (NULL 허용)
+    UpdatedAt *time.Time `db:"updated_at" json:"updated_at,omitempty"`// 수정일 (NULL 허용)
+    UpdatedBy *string    `db:"updated_by" json:"updated_by,omitempty"`// 수정자 (NULL 허용)
 }
 
 func (User) TableName() string {
