@@ -1,9 +1,11 @@
 package service
 
 import (
+	// 표준 라이브러리
 	"context"
 	"time"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/applicant/model"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/applicant/repository"
 )
@@ -26,11 +28,14 @@ func NewApplicantService(repo repository.ApplicantRepository) ApplicantService {
 
 func (s *applicantService) List(ctx context.Context, page, size int, stage, keyword string) ([]model.Applicant, int, error) {
     offset := (page - 1) * size
+
     items, err := s.repo.FindAll(ctx, stage, keyword, offset, size)
     if err != nil {
         return nil, 0, err
     }
+
     total, err := s.repo.CountAll(ctx, stage, keyword)
+
     return items, total, err
 }
 
@@ -43,11 +48,13 @@ func (s *applicantService) UpdateStage(ctx context.Context, id int, newStage, up
     if err != nil {
         return "", time.Time{}, err
     }
+
     old := a.CurrentStage
     updatedAt, err := s.repo.UpdateStage(ctx, id, newStage, updatedBy)
     if err != nil {
         return "", time.Time{}, err
     }
+
     hist := &model.StageHistory{
         ApplicationID: id,
         Stage:         newStage,
@@ -57,6 +64,7 @@ func (s *applicantService) UpdateStage(ctx context.Context, id int, newStage, up
     if err := s.repo.CreateHistory(ctx, hist); err != nil {
         return "", time.Time{}, err
     }
+
     return old, updatedAt, nil
 }
 
@@ -75,6 +83,7 @@ func (s *applicantService) BulkUpdateStage(ctx context.Context, ids []int, newSt
             CreatedBy:     updatedBy,
         })
     }
+    
     return int(cnt), nil
 }
 

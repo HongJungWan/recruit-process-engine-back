@@ -1,14 +1,18 @@
 package handler
 
 import (
+	// 표준 라이브러리
 	"net/http"
 	"strconv"
 
+	// 서드파티(외부) 라이브러리
+	"github.com/gin-gonic/gin"
+
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/applicant/dto/request"
 	res "github.com/HongJungWan/recruit-process-engine-back/internal/applicant/dto/response"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/applicant/service"
 	"github.com/HongJungWan/recruit-process-engine-back/internal/session"
-	"github.com/gin-gonic/gin"
 )
 
 type ApplicantHandler interface {
@@ -28,41 +32,46 @@ func NewApplicantHandler(svc service.ApplicantService) ApplicantHandler {
 }
 
 func (h *applicantHandler) ListApplicants(c *gin.Context) {
-    var q request.ListApplicantsRequest
-    if err := c.ShouldBindQuery(&q); err != nil {
+    var input request.ListApplicantsRequest
+    if err := c.ShouldBindQuery(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    items, total, err := h.svc.List(c.Request.Context(), q.Page, q.Size, q.Stage, q.Keyword)
+
+    items, total, err := h.svc.List(c.Request.Context(), input.Page, input.Size, input.Stage, input.Keyword)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    out := res.ListApplicantsResponse{
+
+    output := res.ListApplicantsResponse{
         Total: total,
-        Page:  q.Page,
-        Size:  q.Size,
+        Page:  input.Page,
+        Size:  input.Size,
         Items: make([]res.ApplicantItem, len(items)),
     }
+
     for i, a := range items {
-        out.Items[i] = res.ApplicantItem{
+        output.Items[i] = res.ApplicantItem{
             ApplicationID: a.ApplicationID,
             Name:          a.Name,
             Email:         a.Email,
             CurrentStage:  a.CurrentStage,
         }
     }
-    c.JSON(http.StatusOK, out)
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *applicantHandler) GetApplicant(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
+
     a, err := h.svc.Get(c.Request.Context(), id)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
         return
     }
-    c.JSON(http.StatusOK, res.ApplicantDetail{
+
+    output := res.ApplicantDetail{
         ApplicationID: a.ApplicationID,
         Name:          a.Name,
         Email:         a.Email,
@@ -75,55 +84,67 @@ func (h *applicantHandler) GetApplicant(c *gin.Context) {
         CreatedBy:     a.CreatedBy,
         UpdatedAt:     a.UpdatedAt,
         UpdatedBy:     a.UpdatedBy,
-    })
+    }
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *applicantHandler) UpdateApplicantStage(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
-    var req request.UpdateStageRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
+
+    var input request.UpdateStageRequest
+    if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
         return
     }
+
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
-    old, updatedAt, err := h.svc.UpdateStage(c.Request.Context(), id, req.Stage, strconv.Itoa(userID))
+    
+    old, updatedAt, err := h.svc.UpdateStage(c.Request.Context(), id, input.Stage, strconv.Itoa(userID))
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    c.JSON(http.StatusOK, res.UpdateStageResponse{
+
+    output := res.UpdateStageResponse{
         ApplicationID: id,
         OldStage:      old,
-        NewStage:      req.Stage,
+        NewStage:      input.Stage,
         UpdatedAt:     updatedAt,
-    })
+    }
+
+    c.JSON(http.StatusOK, output)
 }
 
 func (h *applicantHandler) BulkUpdateApplicantStage(c *gin.Context) {
-    var req request.BulkUpdateStageRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
+    var input request.BulkUpdateStageRequest
+    if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": "invalid payload"})
         return
     }
+
     userID := session.Manager.GetInt(c.Request.Context(), "user_id")
-    cnt, err := h.svc.BulkUpdateStage(c.Request.Context(), req.IDs, req.Stage, strconv.Itoa(userID))
+    
+    cnt, err := h.svc.BulkUpdateStage(c.Request.Context(), input.IDs, input.Stage, strconv.Itoa(userID))
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+
     c.JSON(http.StatusOK, res.BulkUpdateResponse{Updated: cnt})
 }
 
 func (h *applicantHandler) GetApplicantHistory(c *gin.Context) {
     id, _ := strconv.Atoi(c.Param("application_id"))
+
     hs, err := h.svc.GetHistory(c.Request.Context(), id)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
-    out := make([]res.StageHistoryItem, len(hs))
+    
+    output := make([]res.StageHistoryItem, len(hs))
     for i, hst := range hs {
-        out[i] = res.StageHistoryItem{
+        output[i] = res.StageHistoryItem{
             HistoryID: hst.HistoryID,
             Stage:     hst.Stage,
             Status:    hst.Status,
@@ -133,5 +154,5 @@ func (h *applicantHandler) GetApplicantHistory(c *gin.Context) {
             UpdatedBy: hst.UpdatedBy,
         }
     }
-    c.JSON(http.StatusOK, out)
+    c.JSON(http.StatusOK, output)
 }

@@ -1,6 +1,9 @@
 package response
 
-import "time"
+import (
+	// 표준 라이브러리
+	"time"
+)
 
 type ApplicantItem struct {
     ApplicationID int    `json:"application_id"`

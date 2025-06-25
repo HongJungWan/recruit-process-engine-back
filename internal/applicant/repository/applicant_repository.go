@@ -1,13 +1,16 @@
 package repository
 
 import (
+	// 표준 라이브러리
 	"context"
 	"strings"
 	"time"
 
+	// 서드파티(외부) 라이브러리
 	sq "github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/applicant/model"
 )
 
@@ -41,6 +44,7 @@ func (r *applicantRepo) FindAll(ctx context.Context, stage, keyword string, offs
     qb := r.sb.
         Select("application_id","name","email","current_stage").
         From(r.table)
+
     if stage != "" {
         qb = qb.Where(sq.Eq{"current_stage": stage})
     }
@@ -51,18 +55,23 @@ func (r *applicantRepo) FindAll(ctx context.Context, stage, keyword string, offs
             sq.Like{"LOWER(email)": kw},
         })
     }
+
     qb = qb.Limit(uint64(limit)).Offset(uint64(offset))
 
-    sqlStr, args, _ := qb.ToSql()
     var list []model.Applicant
+    sqlStr, args, _ := qb.ToSql()
     if err := r.db.SelectContext(ctx, &list, sqlStr, args...); err != nil {
         return nil, err
     }
+
     return list, nil
 }
 
 func (r *applicantRepo) CountAll(ctx context.Context, stage, keyword string) (int, error) {
-    qb := r.sb.Select("COUNT(*)").From(r.table)
+    qb := r.sb.
+        Select("COUNT(*)").
+        From(r.table)
+
     if stage != "" {
         qb = qb.Where(sq.Eq{"current_stage": stage})
     }
@@ -73,74 +82,90 @@ func (r *applicantRepo) CountAll(ctx context.Context, stage, keyword string) (in
             sq.Like{"LOWER(email)": kw},
         })
     }
-    sqlStr, args, _ := qb.ToSql()
+
     var total int
+    sqlStr, args, _ := qb.ToSql()
     if err := r.db.GetContext(ctx, &total, sqlStr, args...); err != nil {
         return 0, err
     }
+
     return total, nil
 }
 
 func (r *applicantRepo) FindByID(ctx context.Context, id int) (*model.Applicant, error) {
-    qb := r.sb.Select("*").From(r.table).Where(sq.Eq{"application_id": id})
-    sqlStr, args, _ := qb.ToSql()
+    qb := r.sb.
+        Select("*").
+        From(r.table).
+        Where(sq.Eq{"application_id": id})
+
     var a model.Applicant
+    sqlStr, args, _ := qb.ToSql()
     if err := r.db.GetContext(ctx, &a, sqlStr, args...); err != nil {
         return nil, err
     }
+
     return &a, nil
 }
 
 func (r *applicantRepo) UpdateStage(ctx context.Context, id int, newStage, updatedBy string) (time.Time, error) {
-    qb := r.sb.Update(r.table).
+    qb := r.sb.
+    Update(r.table).
         Set("current_stage", newStage).
         Set("updated_by", updatedBy).
         Set("updated_at", sq.Expr("now()")).
-        Where(sq.Eq{"application_id": id}).
-        Suffix("RETURNING updated_at")
-    sqlStr, args, _ := qb.ToSql()
+    Where(sq.Eq{"application_id": id}).
+    Suffix("RETURNING updated_at")
 
     var updatedAt time.Time
+    sqlStr, args, _ := qb.ToSql()
     if err := r.db.GetContext(ctx, &updatedAt, sqlStr, args...); err != nil {
         return time.Time{}, err
     }
+
     return updatedAt, nil
 }
 
 func (r *applicantRepo) BulkUpdateStage(ctx context.Context, ids []int, newStage, updatedBy string) (int64, error) {
-    qb := r.sb.Update(r.table).
+    qb := r.sb.
+    Update(r.table).
         Set("current_stage", newStage).
         Set("updated_by", updatedBy).
         Set("updated_at", sq.Expr("now()")).
-        Where(sq.Eq{"application_id": ids})
+    Where(sq.Eq{"application_id": ids})
+    
     sqlStr, args, _ := qb.ToSql()
     res, err := r.db.ExecContext(ctx, sqlStr, args...)
     if err != nil {
         return 0, err
     }
+
     return res.RowsAffected()
 }
 
 func (r *applicantRepo) CreateHistory(ctx context.Context, h *model.StageHistory) error {
-    qb := r.sb.Insert(r.histTable).
+    qb := r.sb.
+    Insert(r.histTable).
         Columns("application_id","stage","status","created_by").
         Values(h.ApplicationID, h.Stage, h.Status, h.CreatedBy).
-        Suffix("RETURNING history_id, created_at")
+    Suffix("RETURNING history_id, created_at")
+
     sqlStr, args, _ := qb.ToSql()
 
     return r.db.QueryRowxContext(ctx, sqlStr, args...).StructScan(h)
 }
 
 func (r *applicantRepo) FindHistoryByApplicant(ctx context.Context, id int) ([]model.StageHistory, error) {
-    qb := r.sb.Select("*").
-        From(r.histTable).
-        Where(sq.Eq{"application_id": id}).
-        OrderBy("created_at")
-    sqlStr, args, _ := qb.ToSql()
+    qb := r.sb.
+    Select("*").
+    From(r.histTable).
+    Where(sq.Eq{"application_id": id}).
+    OrderBy("created_at")
 
     var hs []model.StageHistory
+    sqlStr, args, _ := qb.ToSql()
     if err := r.db.SelectContext(ctx, &hs, sqlStr, args...); err != nil {
         return nil, err
     }
+
     return hs, nil
 }
