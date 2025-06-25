@@ -1,9 +1,11 @@
 package router
 
 import (
+	// 서드파티(외부) 라이브러리
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
 
+	// 내부 패키지
 	"github.com/HongJungWan/recruit-process-engine-back/internal/session"
 
 	userHandler "github.com/HongJungWan/recruit-process-engine-back/internal/user/handler"

@@ -1,9 +1,11 @@
 package session
 
 import (
+	// 표준 라이브러리
 	"database/sql"
 	"time"
 
+	// 서드파티(외부) 라이브러리
 	ginAdapter "github.com/39george/scs_gin_adapter"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
