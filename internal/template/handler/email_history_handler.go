@@ -127,11 +127,6 @@ func (h *emailHistoryHandler) GetHistory(c *gin.Context) {
         return
     }
 
-    output := res.EmailHistoryDetail{
-        EmailID: hst.EmailID,
-        Title:   hst.Title,
-        Body:    hst.Body,
-        SentAt:  hst.CreatedAt,
-    }
+    output := res.ToEmailHistoryDetail(hst)
     c.JSON(http.StatusOK, output)
 }
